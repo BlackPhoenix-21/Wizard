@@ -9,7 +9,6 @@ public class Player : MonoBehaviour
     private Animator animator;
     public GameObject fireballPrefab;
     private bool isAttacking = false;
-    private int face = 2; // 1 = up, -1 = down, 2 = right, -2 = left
     void Start()
     {
         rbody2D = GetComponent<Rigidbody2D>();
@@ -39,24 +38,63 @@ public class Player : MonoBehaviour
     private void Attack()
     {
         GameObject fireball = Instantiate(fireballPrefab, transform.position, Quaternion.identity);
-        if (GetComponent<SpriteRenderer>().flipX)
+        if (Input.GetKey(KeyCode.A))
         {
             fireball.GetComponent<BallMovment>().direction = Vector2.left;
+            fireball.transform.position += new Vector3(-0.5f, 0, 0);
+            if (Input.GetKey(KeyCode.W))
+            {
+                fireball.GetComponent<BallMovment>().direction = Vector2.up + Vector2.left;
+                fireball.transform.rotation = Quaternion.Euler(0, 0, -45);
+                fireball.transform.position += new Vector3(0, 0.5f, 0);
+            }
+            else if (Input.GetKey(KeyCode.S))
+            {
+                fireball.GetComponent<BallMovment>().direction = Vector2.down + Vector2.left;
+                fireball.transform.rotation = Quaternion.Euler(0, 0, 45);
+                fireball.transform.position += new Vector3(0, -0.5f, 0);
+            }
         }
-        else
+        else if (Input.GetKey(KeyCode.D))
         {
             fireball.GetComponent<BallMovment>().direction = Vector2.right;
+            fireball.transform.position += new Vector3(0.5f, 0, 0);
+            if (Input.GetKey(KeyCode.W))
+            {
+                fireball.GetComponent<BallMovment>().direction = Vector2.up + Vector2.right;
+                fireball.transform.rotation = Quaternion.Euler(0, 0, 45);
+                fireball.transform.position += new Vector3(0, 0.5f, 0);
+            }
+            else if (Input.GetKey(KeyCode.S))
+            {
+                fireball.GetComponent<BallMovment>().direction = Vector2.down + Vector2.right;
+                fireball.transform.rotation = Quaternion.Euler(0, 0, -45);
+                fireball.transform.position += new Vector3(0, -0.5f, 0);
+            }
         }
-        if (face == 1)
+        else if (Input.GetKey(KeyCode.W))
         {
             fireball.GetComponent<BallMovment>().direction = Vector2.up;
             fireball.transform.rotation = Quaternion.Euler(0, 0, 90);
+            fireball.transform.position += new Vector3(0, 0.5f, 0);
         }
-        else if (face == -1)
+        else if (Input.GetKey(KeyCode.S))
         {
             fireball.GetComponent<BallMovment>().direction = Vector2.down;
             fireball.transform.rotation = Quaternion.Euler(0, 0, -90);
+            fireball.transform.position += new Vector3(0, -0.5f, 0);
         }
+        else if (GetComponent<SpriteRenderer>().flipX)
+        {
+            fireball.GetComponent<BallMovment>().direction = Vector2.left;
+            fireball.transform.position += new Vector3(-0.5f, 0, 0);
+        }
+        else if (!GetComponent<SpriteRenderer>().flipX)
+        {
+            fireball.GetComponent<BallMovment>().direction = Vector2.right;
+            fireball.transform.position += new Vector3(0.5f, 0, 0);
+        }
+
         Destroy(fireball, 5f);
     }
 
@@ -66,27 +104,23 @@ public class Player : MonoBehaviour
         {
             y += 1;
             animator.SetBool("IsMoving", true);
-            face = 1;
         }
         if (Input.GetKey(KeyCode.S))
         {
             y -= 1;
             animator.SetBool("IsMoving", true);
-            face = -1;
         }
         if (Input.GetKey(KeyCode.A))
         {
             x -= 1;
             GetComponent<SpriteRenderer>().flipX = true;
             animator.SetBool("IsMoving", true);
-            face = -2;
         }
         if (Input.GetKey(KeyCode.D))
         {
             x += 1;
             GetComponent<SpriteRenderer>().flipX = false;
             animator.SetBool("IsMoving", true);
-            face = 2;
         }
         if (x != 0 && y != 0)
         {
