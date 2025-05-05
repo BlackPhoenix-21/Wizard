@@ -26,6 +26,7 @@ public class BallMovment : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Target"))
         {
+            player.GetComponent<Player>().score++;
             Vector3 spawnPosition;
             do
             {

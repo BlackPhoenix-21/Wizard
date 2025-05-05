@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
@@ -9,6 +11,15 @@ public class Player : MonoBehaviour
     private Animator animator;
     public GameObject fireballPrefab;
     private bool isAttacking = false;
+    private float health = 100f;
+    private float maxHealth = 100f;
+    private float mana = 100f;
+    private float maxMana = 100f;
+    public int score = 0;
+    public GameObject healthbar;
+    public GameObject manabar;
+    public GameObject scoreText;
+
     void Start()
     {
         rbody2D = GetComponent<Rigidbody2D>();
@@ -22,10 +33,28 @@ public class Player : MonoBehaviour
         Movment(x, y);
         if (Input.GetKeyDown(KeyCode.Space) && !isAttacking)
         {
+            if (mana < 10)
+            {
+                Debug.Log("Not enough mana!");
+                return;
+            }
             animator.SetTrigger("Attack");
             Attack();
+            mana -= 10;
             isAttacking = true;
             StartCoroutine(ResetAttack());
+        }
+
+        healthbar.GetComponent<Image>().fillAmount = health / maxHealth;
+        healthbar.GetComponentInChildren<TMP_Text>().text = ((int)health).ToString() + "/" + ((int)maxHealth).ToString();
+        manabar.GetComponent<Image>().fillAmount = mana / maxMana;
+        manabar.GetComponentInChildren<TMP_Text>().text = ((int)mana).ToString() + "/" + ((int)maxMana).ToString();
+
+        scoreText.GetComponent<TMP_Text>().text = "Score: " + score.ToString();
+
+        if (mana < maxMana)
+        {
+            mana += Time.deltaTime * 5;
         }
     }
 
@@ -38,62 +67,73 @@ public class Player : MonoBehaviour
     private void Attack()
     {
         GameObject fireball = Instantiate(fireballPrefab, transform.position, Quaternion.identity);
+        Vector2 direction = Vector2.zero;
+        Vector3 positionOffset = Vector3.zero;
+        float rotationZ = 0;
+
         if (Input.GetKey(KeyCode.A))
         {
-            fireball.GetComponent<BallMovment>().direction = Vector2.left;
-            fireball.transform.position += new Vector3(-0.5f, 0, 0);
+            direction = Vector2.left;
+            positionOffset = new Vector3(-0.5f, 0, 0);
             if (Input.GetKey(KeyCode.W))
             {
-                fireball.GetComponent<BallMovment>().direction = Vector2.up + Vector2.left;
-                fireball.transform.rotation = Quaternion.Euler(0, 0, -45);
-                fireball.transform.position += new Vector3(0, 0.5f, 0);
+                direction += Vector2.up;
+                rotationZ = -45;
+                positionOffset += new Vector3(0, 0.5f, 0);
             }
             else if (Input.GetKey(KeyCode.S))
             {
-                fireball.GetComponent<BallMovment>().direction = Vector2.down + Vector2.left;
-                fireball.transform.rotation = Quaternion.Euler(0, 0, 45);
-                fireball.transform.position += new Vector3(0, -0.5f, 0);
+                direction += Vector2.down;
+                rotationZ = 45;
+                positionOffset += new Vector3(0, -0.5f, 0);
             }
         }
         else if (Input.GetKey(KeyCode.D))
         {
-            fireball.GetComponent<BallMovment>().direction = Vector2.right;
-            fireball.transform.position += new Vector3(0.5f, 0, 0);
+            direction = Vector2.right;
+            positionOffset = new Vector3(0.5f, 0, 0);
             if (Input.GetKey(KeyCode.W))
             {
-                fireball.GetComponent<BallMovment>().direction = Vector2.up + Vector2.right;
-                fireball.transform.rotation = Quaternion.Euler(0, 0, 45);
-                fireball.transform.position += new Vector3(0, 0.5f, 0);
+                direction += Vector2.up;
+                rotationZ = 45;
+                positionOffset += new Vector3(0, 0.5f, 0);
             }
             else if (Input.GetKey(KeyCode.S))
             {
-                fireball.GetComponent<BallMovment>().direction = Vector2.down + Vector2.right;
-                fireball.transform.rotation = Quaternion.Euler(0, 0, -45);
-                fireball.transform.position += new Vector3(0, -0.5f, 0);
+                direction += Vector2.down;
+                rotationZ = -45;
+                positionOffset += new Vector3(0, -0.5f, 0);
             }
         }
         else if (Input.GetKey(KeyCode.W))
         {
-            fireball.GetComponent<BallMovment>().direction = Vector2.up;
-            fireball.transform.rotation = Quaternion.Euler(0, 0, 90);
-            fireball.transform.position += new Vector3(0, 0.5f, 0);
+            direction = Vector2.up;
+            rotationZ = 90;
+            positionOffset = new Vector3(0, 0.5f, 0);
         }
         else if (Input.GetKey(KeyCode.S))
         {
-            fireball.GetComponent<BallMovment>().direction = Vector2.down;
-            fireball.transform.rotation = Quaternion.Euler(0, 0, -90);
-            fireball.transform.position += new Vector3(0, -0.5f, 0);
+            direction = Vector2.down;
+            rotationZ = -90;
+            positionOffset = new Vector3(0, -0.5f, 0);
         }
-        else if (GetComponent<SpriteRenderer>().flipX)
+        else
         {
-            fireball.GetComponent<BallMovment>().direction = Vector2.left;
-            fireball.transform.position += new Vector3(-0.5f, 0, 0);
+            if (GetComponent<SpriteRenderer>().flipX)
+            {
+                direction = Vector2.left;
+                positionOffset = new Vector3(-0.5f, 0, 0);
+            }
+            else
+            {
+                direction = Vector2.right;
+                positionOffset = new Vector3(0.5f, 0, 0);
+            }
         }
-        else if (!GetComponent<SpriteRenderer>().flipX)
-        {
-            fireball.GetComponent<BallMovment>().direction = Vector2.right;
-            fireball.transform.position += new Vector3(0.5f, 0, 0);
-        }
+
+        fireball.GetComponent<BallMovment>().direction = direction;
+        fireball.transform.position += positionOffset;
+        fireball.transform.rotation = Quaternion.Euler(0, 0, rotationZ);
 
         Destroy(fireball, 5f);
     }
