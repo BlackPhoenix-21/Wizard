@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,14 +8,14 @@ public class Player : MonoBehaviour
     private Animator animator;
     public GameObject fireballPrefab;
     private bool isAttacking = false;
-    private float health = 100f;
-    private float maxHealth = 100f;
-    private float mana = 100f;
-    private float maxMana = 100f;
     public int score = 0;
     public GameObject healthbar;
     public GameObject manabar;
     public GameObject scoreText;
+    public GameObject levelbar;
+    public Wizard wizard;
+    public Wizard restWizard;
+    public bool UIActive = false;
 
     void Start()
     {
@@ -28,39 +25,58 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        if (UIActive)
+        {
+            return;
+        }
+
         float x = 0, y = 0;
         animator.SetBool("IsMoving", false);
         Movment(x, y);
         if (Input.GetKeyDown(KeyCode.Space) && !isAttacking)
         {
-            if (mana < 10)
+            if (wizard.mana < 10)
             {
                 Debug.Log("Not enough mana!");
                 return;
             }
+            animator.SetFloat("AttackSpeed", wizard.attackSpeed);
             animator.SetTrigger("Attack");
-            Attack();
-            mana -= 10;
+            wizard.mana -= 10;
             isAttacking = true;
-            StartCoroutine(ResetAttack());
         }
 
-        healthbar.GetComponent<Image>().fillAmount = health / maxHealth;
-        healthbar.GetComponentInChildren<TMP_Text>().text = ((int)health).ToString() + "/" + ((int)maxHealth).ToString();
-        manabar.GetComponent<Image>().fillAmount = mana / maxMana;
-        manabar.GetComponentInChildren<TMP_Text>().text = ((int)mana).ToString() + "/" + ((int)maxMana).ToString();
+        healthbar.GetComponent<Image>().fillAmount = wizard.health / wizard.maxHealth;
+        healthbar.GetComponentInChildren<TMP_Text>().text = ((int)wizard.health).ToString() + "/" + ((int)wizard.maxHealth).ToString();
+        manabar.GetComponent<Image>().fillAmount = wizard.mana / wizard.maxMana;
+        manabar.GetComponentInChildren<TMP_Text>().text = ((int)wizard.mana).ToString() + "/" + ((int)wizard.maxMana).ToString();
+
+        levelbar.GetComponent<Image>().fillAmount = (float)wizard.experience / wizard.GetXpForLevel(wizard.level);
+        levelbar.GetComponentInChildren<TMP_Text>().text = wizard.level.ToString() + " (" + wizard.experience.ToString() + "/" + wizard.GetXpForLevel(wizard.level).ToString() + ")";
 
         scoreText.GetComponent<TMP_Text>().text = "Score: " + score.ToString();
 
-        if (mana < maxMana)
+        if (wizard.mana < wizard.maxMana)
         {
-            mana += Time.deltaTime * 5;
+            wizard.mana += Time.deltaTime * 5;
         }
     }
 
-    IEnumerator ResetAttack()
+    public void RestWizard()
     {
-        yield return new WaitForSeconds(1f);
+        wizard.health = restWizard.health;
+        wizard.mana = restWizard.mana;
+        wizard.maxHealth = restWizard.maxHealth;
+        wizard.maxMana = restWizard.maxMana;
+        wizard.damage = restWizard.damage;
+        wizard.attackSpeed = restWizard.attackSpeed;
+        wizard.level = restWizard.level;
+        wizard.experience = restWizard.experience;
+        wizard.statPoints = restWizard.statPoints;
+    }
+
+    public void ResteAttack()
+    {
         isAttacking = false;
     }
 
@@ -167,6 +183,7 @@ public class Player : MonoBehaviour
             x *= 0.7f;
             y *= 0.7f;
         }
-        transform.position += 4 * Time.deltaTime * (Vector3.up * y + Vector3.right * x);
+        Vector2 moveDirection = new Vector2(x, y).normalized;
+        rbody2D.velocity = moveDirection * 4f;
     }
 }
