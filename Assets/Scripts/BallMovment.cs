@@ -9,10 +9,12 @@ public class BallMovment : MonoBehaviour
     public GameObject targetPrefab;
     private GameObject player;
     private float spawnTime;
+    private GameObject enemy;
 
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
+        enemy = GameObject.FindGameObjectWithTag("Enemy");
         rbody2D = GetComponent<Rigidbody2D>();
         rbody2D.velocity = direction.normalized * speed;
         if (direction.x < 0)
@@ -43,6 +45,11 @@ public class BallMovment : MonoBehaviour
             Destroy(gameObject);
 
             Instantiate(targetPrefab, spawnPosition, Quaternion.identity);
+        }
+        else if (collision.gameObject.CompareTag("Enemy"))
+        {
+            Destroy(gameObject);
+            Destroy(collision.gameObject); // Zerstört den Gegner, wenn die Kugel ihn trifft
         }
     }
 

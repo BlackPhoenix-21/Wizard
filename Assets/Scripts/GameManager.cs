@@ -14,6 +14,8 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
     public GameState state;
     private float timer;
+    public Wizard[] wizard;
+    public Wizard[] restWizard;
 
     void Start()
     {

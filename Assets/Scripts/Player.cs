@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class Player : MonoBehaviour
@@ -21,12 +22,21 @@ public class Player : MonoBehaviour
     {
         rbody2D = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        wizard = GameManager.instance.wizard[0];
+        restWizard = GameManager.instance.restWizard[0];
     }
 
     void Update()
     {
         if (UIActive)
         {
+            return;
+        }
+
+        if (wizard.health <= 0)
+        {
+            Debug.Log("You are dead!");
+            SceneManager.LoadScene("Title");
             return;
         }
 
