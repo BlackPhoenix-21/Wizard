@@ -22,8 +22,8 @@ public class Player : MonoBehaviour
     {
         rbody2D = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
-        wizard = GameManager.instance.wizard[0];
-        restWizard = GameManager.instance.restWizard[0];
+        wizard = GameManager.instance.wizard[GameManager.instance.activeWizardIndex];
+        restWizard = GameManager.instance.restWizard[GameManager.instance.activeWizardIndex];
     }
 
     void Update()
@@ -70,19 +70,6 @@ public class Player : MonoBehaviour
         {
             wizard.mana += Time.deltaTime * 5;
         }
-    }
-
-    public void RestWizard()
-    {
-        wizard.health = restWizard.health;
-        wizard.mana = restWizard.mana;
-        wizard.maxHealth = restWizard.maxHealth;
-        wizard.maxMana = restWizard.maxMana;
-        wizard.damage = restWizard.damage;
-        wizard.attackSpeed = restWizard.attackSpeed;
-        wizard.level = restWizard.level;
-        wizard.experience = restWizard.experience;
-        wizard.statPoints = restWizard.statPoints;
     }
 
     public void ResteAttack()

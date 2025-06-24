@@ -14,7 +14,7 @@ public class TitleUI : MonoBehaviour
             case 1:
                 SceneManager.LoadScene("Game", LoadSceneMode.Single);
                 GameManager.instance.state = GameManager.GameState.Playing;
-                GameManager.instance.ResteValues();
+                GameManager.instance.RestWizard();
                 break;
             case 2:
                 Application.Quit();

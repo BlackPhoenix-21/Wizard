@@ -48,8 +48,18 @@ public class BallMovment : MonoBehaviour
         }
         else if (collision.gameObject.CompareTag("Enemy"))
         {
+            player.GetComponent<Player>().wizard.XP(50);
             Destroy(gameObject);
-            Destroy(collision.gameObject); // Zerstört den Gegner, wenn die Kugel ihn trifft
+            Destroy(collision.gameObject);
+            GameObject.Find("Spawner").GetComponent<Spawner>().count--;
+        }
+    }
+
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            player.GetComponent<Player>().wizard.health -= enemy.GetComponent<Enemy>().damage;
         }
     }
 

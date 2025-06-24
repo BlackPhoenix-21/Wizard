@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
     public GameState state;
     private float timer;
+    public int activeWizardIndex = 0;
     public Wizard[] wizard;
     public Wizard[] restWizard;
 
@@ -29,6 +30,7 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        RestWizard();
     }
 
     void Update()
@@ -45,8 +47,16 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void ResteValues()
+    public void RestWizard()
     {
-        GameObject.FindWithTag("Player").GetComponent<Player>().RestWizard();
+        wizard[activeWizardIndex].health = restWizard[activeWizardIndex].health;
+        wizard[activeWizardIndex].mana = restWizard[activeWizardIndex].mana;
+        wizard[activeWizardIndex].maxHealth = restWizard[activeWizardIndex].maxHealth;
+        wizard[activeWizardIndex].maxMana = restWizard[activeWizardIndex].maxMana;
+        wizard[activeWizardIndex].damage = restWizard[activeWizardIndex].damage;
+        wizard[activeWizardIndex].attackSpeed = restWizard[activeWizardIndex].attackSpeed;
+        wizard[activeWizardIndex].level = restWizard[activeWizardIndex].level;
+        wizard[activeWizardIndex].experience = restWizard[activeWizardIndex].experience;
+        wizard[activeWizardIndex].statPoints = restWizard[activeWizardIndex].statPoints;
     }
 }
