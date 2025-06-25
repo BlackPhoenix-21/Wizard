@@ -17,6 +17,9 @@ public class Player : MonoBehaviour
     public Wizard wizard;
     public Wizard restWizard;
     public bool UIActive = false;
+    [HideInInspector]
+    public bool gotDamage = false;
+    private float damageCooldown = 0.6f;
 
     void Start()
     {
@@ -28,11 +31,13 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        // Wenn das UI aktiv ist, keine Eingaben verarbeiten
         if (UIActive)
         {
             return;
         }
 
+        // Überprüfen, ob der Spieler tot ist
         if (wizard.health <= 0)
         {
             Debug.Log("You are dead!");
@@ -40,9 +45,22 @@ public class Player : MonoBehaviour
             return;
         }
 
+        // Schaden-Cooldown verarbeiten
+        if (gotDamage)
+        {
+            damageCooldown -= Time.deltaTime;
+            if (damageCooldown <= 0)
+            {
+                gotDamage = false;
+                damageCooldown = 0.6f; // Cooldown zurücksetzen
+            }
+        }
+
         float x = 0, y = 0;
         animator.SetBool("IsMoving", false);
-        Movment(x, y);
+        Movment(x, y); // Spielerbewegung verarbeiten
+
+        // Angriff ausführen, wenn Leertaste gedrückt wird und kein Angriff läuft
         if (Input.GetKeyDown(KeyCode.Space) && !isAttacking)
         {
             if (wizard.mana < 10)
@@ -52,20 +70,26 @@ public class Player : MonoBehaviour
             }
             animator.SetFloat("AttackSpeed", wizard.attackSpeed);
             animator.SetTrigger("Attack");
-            wizard.mana -= 10;
+            wizard.mana -= 10; // Mana für Angriff abziehen
             isAttacking = true;
         }
 
+        // Lebensbalken aktualisieren
         healthbar.GetComponent<Image>().fillAmount = wizard.health / wizard.maxHealth;
         healthbar.GetComponentInChildren<TMP_Text>().text = ((int)wizard.health).ToString() + "/" + ((int)wizard.maxHealth).ToString();
+
+        // Manabalken aktualisieren
         manabar.GetComponent<Image>().fillAmount = wizard.mana / wizard.maxMana;
         manabar.GetComponentInChildren<TMP_Text>().text = ((int)wizard.mana).ToString() + "/" + ((int)wizard.maxMana).ToString();
 
+        // Erfahrungs-/Levelbalken aktualisieren
         levelbar.GetComponent<Image>().fillAmount = (float)wizard.experience / wizard.GetXpForLevel(wizard.level);
         levelbar.GetComponentInChildren<TMP_Text>().text = wizard.level.ToString() + " (" + wizard.experience.ToString() + "/" + wizard.GetXpForLevel(wizard.level).ToString() + ")";
 
+        // Punktestand anzeigen
         scoreText.GetComponent<TMP_Text>().text = "Score: " + score.ToString();
 
+        // Mana-Regeneration, falls nicht voll
         if (wizard.mana < wizard.maxMana)
         {
             wizard.mana += Time.deltaTime * 5;

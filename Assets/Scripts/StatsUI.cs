@@ -19,28 +19,33 @@ public class StatsUI : MonoBehaviour
         UI.SetActive(false);
     }
 
+    // Wird einmal pro Frame aufgerufen
     private void Update()
     {
+        // Überprüft, ob die Escape-Taste gedrückt wurde und das Spiel entweder im Spiel- oder Pausenmodus ist
         if (Input.GetKeyDown(KeyCode.Escape) && (GameManager.instance.state == GameManager.GameState.Playing ||
             GameManager.instance.state == GameManager.GameState.Paused))
         {
+            // Wenn das Pausenmenü aktiv ist, wird es geschlossen und das Spiel fortgesetzt
             if (pauseMenu.activeSelf)
             {
-                PauseMenu(1); // Close pause menu
+                PauseMenu(1); // Pausenmenü schließen
                 GameManager.instance.state = GameManager.GameState.Playing;
-
             }
+            // Andernfalls wird das Pausenmenü geöffnet und das Spiel pausiert
             else
             {
-                PauseMenu(0); // Open pause menu
+                PauseMenu(0); // Pausenmenü öffnen
                 GameManager.instance.state = GameManager.GameState.Paused;
             }
         }
+        // Überprüft, ob die Tab-Taste gedrückt wurde, um das Stats-UI ein- oder auszublenden
         if (Input.GetKeyDown(KeyCode.Tab))
         {
             UI.SetActive(!UI.activeSelf);
             GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().UIActive = UI.activeSelf;
         }
+        // Wenn das Stats-UI aktiv ist, werden die aktuellen Werte angezeigt
         if (UI.activeSelf)
         {
             HP.GetComponent<TMP_Text>().text = "HP: " + (int)wizard.health + "/" + wizard.maxHealth;

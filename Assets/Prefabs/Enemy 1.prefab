@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 852495726295862297}
   - component: {fileID: 7215867360913004359}
   - component: {fileID: 510815796088359741}
-  - component: {fileID: 7822974751633951980}
+  - component: {fileID: 8320364362462384074}
   m_Layer: 0
   m_Name: Enemy 1
   m_TagString: Enemy
@@ -149,7 +149,7 @@ CapsuleCollider2D:
   m_Offset: {x: -0.25, y: 0}
   m_Size: {x: 1.25, y: 1.75}
   m_Direction: 0
---- !u!114 &7822974751633951980
+--- !u!114 &8320364362462384074
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -161,6 +161,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02013376ab495fb43980ae781a75cffd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 20
+  damage: 10
   fireballPrefab: {fileID: 5927232042240587749, guid: b218754cd7f97874d80e0f80d3ccdfb9, type: 3}
   attackSpeed: 2

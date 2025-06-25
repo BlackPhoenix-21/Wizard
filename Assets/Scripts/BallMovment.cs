@@ -26,40 +26,42 @@ public class BallMovment : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collision)
     {
+        // Überprüft, ob das getroffene Objekt ein Target ist
         if (collision.gameObject.CompareTag("Target"))
         {
-            float timeTaken = Time.time - spawnTime;
-            int addXP = CalculateXP(timeTaken);
+            float timeTaken = Time.time - spawnTime; // Zeit seit dem Spawn des Balls
+            int addXP = CalculateXP(timeTaken); // XP basierend auf der benötigten Zeit berechnen
 
-            player.GetComponent<Player>().score++;
-            player.GetComponent<Player>().wizard.XP(addXP);
+            player.GetComponent<Player>().score++; // Spielerpunktzahl erhöhen
+            player.GetComponent<Player>().wizard.XP(addXP); // XP dem Spieler hinzufügen
 
             Vector3 spawnPosition;
+            // Neue zufällige Position für das nächste Target finden, die nicht auf Spieler- oder aktuelle Target-Position liegt
             do
             {
                 spawnPosition = new Vector3(Random.Range(-8f, 8f), Random.Range(-4f, 4f), 0);
             } while ((spawnPosition.x == player.transform.position.x || spawnPosition.y == player.transform.position.y)
                 && (spawnPosition.x == collision.transform.position.x || spawnPosition.y == collision.transform.position.y));
 
-            Destroy(collision.gameObject);
-            Destroy(gameObject);
+            Destroy(collision.gameObject); // Das getroffene Target zerstören
+            Destroy(gameObject); // Den Ball zerstören
 
-            Instantiate(targetPrefab, spawnPosition, Quaternion.identity);
+            Instantiate(targetPrefab, spawnPosition, Quaternion.identity); // Neues Target erzeugen
         }
+        // Überprüft, ob das getroffene Objekt ein Enemy ist
         else if (collision.gameObject.CompareTag("Enemy"))
         {
-            player.GetComponent<Player>().wizard.XP(50);
-            Destroy(gameObject);
-            Destroy(collision.gameObject);
-            GameObject.Find("Spawner").GetComponent<Spawner>().count--;
+            player.GetComponent<Player>().wizard.XP(50); // Spieler erhält 50 XP
+            Destroy(gameObject); // Ball zerstören
+            Destroy(collision.gameObject); // Enemy zerstören
+            GameObject.Find("Spawner").GetComponent<Spawner>().count--; // Enemy-Zähler im Spawner verringern
         }
-    }
-
-    void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Player"))
+        // Überprüft, ob das getroffene Objekt der Spieler ist und dieser noch keinen Schaden bekommen hat
+        else if (collision.gameObject.CompareTag("Player") && !player.GetComponent<Player>().gotDamage)
         {
-            player.GetComponent<Player>().wizard.health -= enemy.GetComponent<Enemy>().damage;
+            player.GetComponent<Player>().wizard.health -= enemy.GetComponent<Enemy>().damage; // Spieler erhält Schaden
+            player.GetComponent<Player>().gotDamage = true; // Spieler hat Schaden erhalten, um Mehrfachschaden zu verhindern
+            Destroy(gameObject); // Ball zerstören
         }
     }
 
