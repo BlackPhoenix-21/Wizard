@@ -59,7 +59,6 @@ public class Enemy : MonoBehaviour
                     stateTimer = 0f;
                 }
                 break;
-
             case EnemyState.Patrolling:
                 Patrol();
                 // Wenn Spieler nah genug ist, wechsle zu Attack
@@ -78,7 +77,6 @@ public class Enemy : MonoBehaviour
                     stateTimer = 0f;
                 }
                 break;
-
             case EnemyState.Attacking:
                 RangAttack();
                 // Wenn Spieler zu weit weg ist, gehe zu Idle
